@@ -30,7 +30,6 @@ jobs:
         mkdir -p temp_extract
         unzip -q "$ZIP_FILE" -d temp_extract
 
-        # Cek apakah hasil ekstrak langsung berisi folder 'app' atau dibungkus 1 folder
         if [ -d "temp_extract/app" ]; then
           echo "Struktur terdeteksi langsung di root zip."
           mv temp_extract/* .
@@ -64,12 +63,12 @@ jobs:
           echo "PERINGATAN: File 'gradlew' TIDAK DITEMUKAN di dalam zip!"
         fi
 
-    # --- BAGIAN YANG DIUBAH: Memaksa Gradle versi 9.5 ---
+    # --- BAGIAN YANG DIPERBAIKI ---
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v3
       with:
-        gradle-version: 9.5   # <-- Ini kunci perbaikannya
-    # ---------------------------------------------------
+        gradle-version: 8.11.1   # <-- Menggunakan versi stabil yang tersedia
+    # ------------------------------
 
     - name: Build Debug APK
       run: |
