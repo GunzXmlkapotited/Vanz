@@ -18,7 +18,6 @@ jobs:
     - name: Auto Detect and Extract ZIP
       run: |
         echo "Mencari file ZIP di repositori..."
-        # Mencari file zip di root, ambil yang pertama ditemukan
         ZIP_FILE=$(find . -maxdepth 1 -type f -name "*.zip" | head -n 1)
 
         if [ -z "$ZIP_FILE" ]; then
@@ -36,7 +35,6 @@ jobs:
           echo "Struktur terdeteksi langsung di root zip."
           mv temp_extract/* .
         else
-          # Jika dibungkus 1 folder (misal: apk_no_strings_display/)
           INNER_DIR=$(find temp_extract -maxdepth 1 -mindepth 1 -type d | head -n 1)
           if [ -n "$INNER_DIR" ]; then
             echo "Struktur terdeteksi di dalam folder: $INNER_DIR"
@@ -63,19 +61,22 @@ jobs:
           chmod +x gradlew
           echo "gradlew ditemukan dan diberi izin eksekusi."
         else
-          echo "PERINGATAN: File 'gradlew' TIDAK DITEMUKAN!"
-          echo "Pastikan file gradlew ada di dalam zip agar build bisa berjalan."
+          echo "PERINGATAN: File 'gradlew' TIDAK DITEMUKAN di dalam zip!"
         fi
 
+    # --- BAGIAN YANG DIUBAH: Memaksa Gradle versi 9.5 ---
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v3
+      with:
+        gradle-version: 9.5   # <-- Ini kunci perbaikannya
+    # ---------------------------------------------------
 
     - name: Build Debug APK
       run: |
         if [ -f "gradlew" ]; then
           ./gradlew assembleDebug
         else
-          echo "Mencoba menggunakan gradle sistem..."
+          echo "File gradlew tidak ada, mencoba perintah 'gradle' langsung..."
           gradle assembleDebug
         fi
 
@@ -83,7 +84,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
-        # Path ini mencari APK di mana saja di dalam folder hasil build
         path: |
           **/build/outputs/apk/debug/*.apk
           **/build/outputs/apk/release/*.apk
