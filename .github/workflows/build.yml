@@ -26,17 +26,14 @@ jobs:
         fi
 
         echo "Ditemukan file: $ZIP_FILE"
-        echo "Mengekstrak ke folder sementara..."
         mkdir -p temp_extract
         unzip -q "$ZIP_FILE" -d temp_extract
 
         if [ -d "temp_extract/app" ]; then
-          echo "Struktur terdeteksi langsung di root zip."
           mv temp_extract/* .
         else
           INNER_DIR=$(find temp_extract -maxdepth 1 -mindepth 1 -type d | head -n 1)
           if [ -n "$INNER_DIR" ]; then
-            echo "Struktur terdeteksi di dalam folder: $INNER_DIR"
             mv "$INNER_DIR"/* .
           else
             mv temp_extract/* .
@@ -44,7 +41,7 @@ jobs:
         fi
 
         rm -rf temp_extract
-        echo "Ekstrak selesai. Isi folder saat ini:"
+        echo "Ekstrak selesai."
         ls -la
 
     - name: Set up JDK 17
@@ -63,12 +60,12 @@ jobs:
           echo "PERINGATAN: File 'gradlew' TIDAK DITEMUKAN di dalam zip!"
         fi
 
-    # --- BAGIAN YANG DIPERBAIKI ---
+    # --- BAGIAN YANG DIUBAH: Naikkan ke 8.13 ---
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v3
       with:
-        gradle-version: 8.11.1   # <-- Menggunakan versi stabil yang tersedia
-    # ------------------------------
+        gradle-version: 8.13
+    # -------------------------------------------
 
     - name: Build Debug APK
       run: |
